@@ -1,0 +1,11 @@
+img {
+	width: 14em;
+}
+
+.input div {
+	display: inline-block;
+}
+
+canvas {
+	border: 1px dashed black;
+}
