@@ -1,15 +1,23 @@
 window.onload = main
 
+let refreshInProcess = false
+
 function main() {
 	initSettings()
 	updateCanvas()
 
 	document.querySelectorAll(".params input[type=checkbox]").forEach(i => {
+		if (refreshInProcess) {
+			return
+		}
 		i.addEventListener("click", updateCanvas)
 	})
 
 	document.querySelectorAll(".params input[type=range], .params input[type=color]").forEach(i => {
 		i.addEventListener("input", e => {
+			if (refreshInProcess) {
+				return
+			}
 			let label = document.querySelector(`label[for="${e.target.id}"] span`)
 			if (label) {
 				label.innerHTML = e.target.value
@@ -19,10 +27,9 @@ function main() {
 	})
 }
 
-let enableEvents = true
 
 function initSettings() {
-	enableEvents = false
+	refreshInProcess = true
 
 	let border = document.querySelector("#border")
 	// let avatar = document.querySelector("#avatar1")
@@ -46,7 +53,7 @@ function initSettings() {
 	offsetY.max = avatar.naturalHeight - 1
 	offsetY.min = -avatar.naturalHeight + 1
 
-	enableEvents = true
+	refreshInProcess = false
 }
 
 function updateCanvas() {
