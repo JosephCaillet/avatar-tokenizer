@@ -1,43 +1,91 @@
 window.onload = main
 
 function main() {
+	initSettings()
+	updateCanvas()
+
+	document.querySelectorAll(".params input[type=checkbox]").forEach(i => {
+		i.addEventListener("click", updateCanvas)
+	})
+
+	document.querySelectorAll(".params input[type=range], .params input[type=color]").forEach(i => {
+		i.addEventListener("input", e => {
+			let label = document.querySelector(`label[for="${e.target.id}"] span`)
+			if (label) {
+				label.innerHTML = e.target.value
+			}
+			updateCanvas()
+		})
+	})
+}
+
+let enableEvents = true
+
+function initSettings() {
+	enableEvents = false
+
 	let border = document.querySelector("#border")
-	let avatar = document.querySelector("#avatar1")
-	// let avatar = document.querySelector("#avatar2")
+	// let avatar = document.querySelector("#avatar1")
+	let avatar = document.querySelector("#avatar2")
+
+	let canvas = document.querySelector("canvas")
+	let cropRadius = document.querySelector("#circularCropRadius")
+	cropRadius.value = cropRadius.max = canvas.width / 2
+
+	document.querySelector("#zoom").value = 1
+	document.querySelector("#rotation").value = 0
+
+	// Will only work if zoom value set to 1, have to be fixed later :/
+	let offsetX = document.querySelector("#offsetX")
+	offsetX.value = 0
+	offsetX.max = avatar.naturalWidth - 1
+	offsetX.min = -avatar.naturalWidth + 1
+
+	let offsetY = document.querySelector("#offsetY")
+	offsetY.value = 0
+	offsetY.max = avatar.naturalHeight - 1
+	offsetY.min = -avatar.naturalHeight + 1
+
+	enableEvents = true
+}
+
+function updateCanvas() {
+	let border = document.querySelector("#border")
+	// let avatar = document.querySelector("#avatar1")
+	let avatar = document.querySelector("#avatar2")
 
 	let canvas = document.querySelector("canvas")
 
-	let drawBorder = false
-	let circularCorp = true
-	let circularCropRadius = 0
-	let backgroundColor = "green"
-	let zoom = 1.1
-	let rotate = 15
-	let offsetX = -20
-	let offsetY = -10
+	let drawBorder = document.querySelector("#drawBorder").checked
+	let circularCrop = document.querySelector("#circularCrop").checked
+	let circularCropRadius = document.querySelector("#circularCropRadius").value
+	let backgroundColor = document.querySelector("#backgroundColor").checked ? document.querySelector("#backgroundColorValue").value : null
+	let antiAliasing = document.querySelector("#antiAliasing").checked
+	let zoom = document.querySelector("#zoom").valueAsNumber
+	let rotation = document.querySelector("#rotation").valueAsNumber
+	let offsetX = document.querySelector("#offsetX").valueAsNumber
+	let offsetY = document.querySelector("#offsetY").valueAsNumber
 
-	let w = canvas.width = drawBorder ? border.naturalWidth : avatar.naturalWidth // this second option may generate problems if circularCrop is enabled :/
-	let h = canvas.height = drawBorder ? border.naturalHeight : avatar.naturalHeight
+	// Set to 512 by defautl in HTML, have to update in the future to adapty to various file size when file picker will be implemented.
+	let w = canvas.width //= drawBorder ? border.naturalWidth : avatar.naturalWidth // this second option may generate problems if circularCrop is enabled :/
+	let h = canvas.height //= drawBorder ? border.naturalHeight : avatar.naturalHeight
 
-	let x = w / 2 - w / 2 * zoom + offsetX
-	let y = h / 2 - h / 2 * zoom + offsetY
+	let x = w / 2 - w / 2 * zoom
+	let y = h / 2 - h / 2 * zoom
 
 	let ctx = canvas.getContext("2d")
 
-	// ctx.imageSmoothingEnabled = false // add option to turn this off ?
-	ctx.save()
-	let restoreCount = 1
+	ctx.clearRect(0, 0, w, h)
 
-	ctx.translate(w / 2, h / 2)
-	ctx.rotate((Math.PI / 180) * rotate)
-	ctx.translate(-w / 2, -h / 2)
+	ctx.imageSmoothingEnabled = antiAliasing
 
-	if (circularCorp) {
+	let restoreCount = 0
+
+	if (circularCrop) {
 		ctx.save()
 		restoreCount++
 		ctx.beginPath()
-		circularCorp = w / 2
-		ctx.arc(w / 2, h / 2, circularCorp, 0, 2 * Math.PI)
+		ctx.arc(w / 2, h / 2, circularCropRadius, 0, 2 * Math.PI)
 		ctx.clip()
 	}
 
@@ -48,7 +96,14 @@ function main() {
 		ctx.fillRect(0, 0, w, h)
 	}
 
-	ctx.drawImage(avatar, x, y, w * zoom, h * zoom) // does an optimisation for zoom=1 may be usefull?
+	ctx.save()
+	restoreCount++
+
+	ctx.translate(w / 2 + offsetX, h / 2 + offsetY)
+	ctx.rotate((Math.PI / 180) * rotation)
+	ctx.translate(-w / 2, -h / 2)
+
+	ctx.drawImage(avatar, x, y, w * zoom, h * zoom)
 
 	while (restoreCount) {
 		ctx.restore()
