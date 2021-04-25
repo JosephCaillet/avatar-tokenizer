@@ -2,14 +2,15 @@ window.onload = main
 
 function main() {
 	let border = document.querySelector("#border")
-	// let avatar = document.querySelector("#avatar1")
-	let avatar = document.querySelector("#avatar2")
+	let avatar = document.querySelector("#avatar1")
+	// let avatar = document.querySelector("#avatar2")
 
 	let canvas = document.querySelector("canvas")
 
 	let drawBorder = false
 	let circularCorp = true
 	let circularCropRadius = 0
+	let backgroundColor = "green"
 	let zoom = 1.1
 	let rotate = 15
 	let offsetX = -20
@@ -25,6 +26,7 @@ function main() {
 
 	// ctx.imageSmoothingEnabled = false // add option to turn this off ?
 	ctx.save()
+	let restoreCount = 1
 
 	ctx.translate(w / 2, h / 2)
 	ctx.rotate((Math.PI / 180) * rotate)
@@ -32,18 +34,25 @@ function main() {
 
 	if (circularCorp) {
 		ctx.save()
+		restoreCount++
 		ctx.beginPath()
-		circularCorp = w/2
+		circularCorp = w / 2
 		ctx.arc(w / 2, h / 2, circularCorp, 0, 2 * Math.PI)
 		ctx.clip()
 	}
 
+	if (backgroundColor) {
+		ctx.save()
+		restoreCount++
+		ctx.fillStyle = backgroundColor
+		ctx.fillRect(0, 0, w, h)
+	}
+
 	ctx.drawImage(avatar, x, y, w * zoom, h * zoom) // does an optimisation for zoom=1 may be usefull?
 
-	ctx.restore()
-
-	if (circularCorp) {
+	while (restoreCount) {
 		ctx.restore()
+		restoreCount--
 	}
 
 	if (drawBorder) {
