@@ -2,6 +2,8 @@ window.onload = main
 
 let refreshInProcess = false
 
+let avatar, border
+
 function main() {
 	initSettings()
 	updateCanvas()
@@ -31,9 +33,12 @@ function main() {
 function initSettings() {
 	refreshInProcess = true
 
-	let border = document.querySelector("#border")
+	border = document.querySelector("#border")
 	// let avatar = document.querySelector("#avatar1")
-	let avatar = document.querySelector("#avatar2")
+	// let avatar = document.querySelector("#avatar2")
+
+	avatar = document.querySelector("#avatar3")
+
 
 	let canvas = document.querySelector("canvas")
 	let cropRadius = document.querySelector("#circularCropRadius")
@@ -57,10 +62,6 @@ function initSettings() {
 }
 
 function updateCanvas() {
-	let border = document.querySelector("#border")
-	// let avatar = document.querySelector("#avatar1")
-	let avatar = document.querySelector("#avatar2")
-
 	let canvas = document.querySelector("canvas")
 
 	let drawBorder = document.querySelector("#drawBorder").checked
@@ -73,16 +74,18 @@ function updateCanvas() {
 	let offsetX = document.querySelector("#offsetX").valueAsNumber
 	let offsetY = document.querySelector("#offsetY").valueAsNumber
 
-	// Set to 512 by defautl in HTML, have to update in the future to adapty to various file size when file picker will be implemented.
-	let w = canvas.width //= drawBorder ? border.naturalWidth : avatar.naturalWidth // this second option may generate problems if circularCrop is enabled :/
-	let h = canvas.height //= drawBorder ? border.naturalHeight : avatar.naturalHeight
+	// Set to 512 by default in HTML, have to update in the future to adapt to various file size when file picker will be implemented.
+	let canvasWidth = canvas.width //= drawBorder ? border.naturalWidth : avatar.naturalWidth // this second option may generate problems if circularCrop is enabled :/
+	let canvasHeight = canvas.height //= drawBorder ? border.naturalHeight : avatar.naturalHeight
+	let avatarWidth = avatar.naturalWidth
+	let avatarHeight = avatar.naturalHeight
 
-	let x = w / 2 - w / 2 * zoom
-	let y = h / 2 - h / 2 * zoom
+	let x = canvasWidth / 2 - avatarWidth / 2 * zoom
+	let y = canvasHeight / 2 - avatarHeight / 2 * zoom
 
 	let ctx = canvas.getContext("2d")
 
-	ctx.clearRect(0, 0, w, h)
+	ctx.clearRect(0, 0, canvasWidth, canvasHeight)
 
 	ctx.imageSmoothingEnabled = antiAliasing
 
@@ -92,7 +95,7 @@ function updateCanvas() {
 		ctx.save()
 		restoreCount++
 		ctx.beginPath()
-		ctx.arc(w / 2, h / 2, circularCropRadius, 0, 2 * Math.PI)
+		ctx.arc(canvasWidth / 2, canvasHeight / 2, circularCropRadius, 0, 2 * Math.PI)
 		ctx.clip()
 	}
 
@@ -100,17 +103,17 @@ function updateCanvas() {
 		ctx.save()
 		restoreCount++
 		ctx.fillStyle = backgroundColor
-		ctx.fillRect(0, 0, w, h)
+		ctx.fillRect(0, 0, canvasWidth, canvasHeight)
 	}
 
 	ctx.save()
 	restoreCount++
 
-	ctx.translate(w / 2 + offsetX, h / 2 + offsetY)
+	ctx.translate(canvasWidth / 2 + offsetX, canvasHeight / 2 + offsetY)
 	ctx.rotate((Math.PI / 180) * rotation)
-	ctx.translate(-w / 2, -h / 2)
+	ctx.translate(-canvasWidth / 2, -canvasHeight / 2)
 
-	ctx.drawImage(avatar, x, y, w * zoom, h * zoom)
+	ctx.drawImage(avatar, x, y, avatarWidth * zoom, avatarHeight * zoom)
 
 	while (restoreCount) {
 		ctx.restore()
