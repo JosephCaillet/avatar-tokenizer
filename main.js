@@ -2,7 +2,13 @@ window.onload = main
 
 let refreshInProcess = false
 
-let avatar, border
+let avatar
+let border
+
+let canvasWidth
+let canvasHeight
+let avatarWidth
+let avatarHeight
 
 function main() {
 	initSettings()
@@ -38,31 +44,38 @@ function initSettings() {
 	// let avatar = document.querySelector("#avatar2")
 
 	avatar = document.querySelector("#avatar3")
-
-
 	let canvas = document.querySelector("canvas")
+
+	// Set to 512 by default in HTML, have to update in the future to adapt to various file size when file picker will be implemented.
+	canvasWidth = canvas.width //= drawBorder ? border.naturalWidth : avatar.naturalWidth // this second option may generate problems if circularCrop is enabled :/
+	canvasHeight = canvas.height //= drawBorder ? border.naturalHeight : avatar.naturalHeight
+	avatarWidth = avatar.naturalWidth
+	avatarHeight = avatar.naturalHeight
+
+
 	let cropRadius = document.querySelector("#circularCropRadius")
 	cropRadius.value = cropRadius.max = canvas.width / 2
 
-	document.querySelector("#zoom").value = 1
+	document.querySelector("#zoom").value = Math.min(canvasHeight / avatarHeight, canvasWidth / avatarWidth)
 	document.querySelector("#rotation").value = 0
 
 	// Will only work if zoom value set to 1, have to be fixed later :/
 	let offsetX = document.querySelector("#offsetX")
 	offsetX.value = 0
-	offsetX.max = avatar.naturalWidth - 1
-	offsetX.min = -avatar.naturalWidth + 1
+	offsetX.max = avatarWidth - 1
+	offsetX.min = -avatarWidth + 1
 
 	let offsetY = document.querySelector("#offsetY")
 	offsetY.value = 0
-	offsetY.max = avatar.naturalHeight - 1
-	offsetY.min = -avatar.naturalHeight + 1
+	offsetY.max = avatarHeight - 1
+	offsetY.min = -avatarHeight + 1
 
 	refreshInProcess = false
 }
 
 function updateCanvas() {
 	let canvas = document.querySelector("canvas")
+	let ctx = canvas.getContext("2d")
 
 	let drawBorder = document.querySelector("#drawBorder").checked
 	let circularCrop = document.querySelector("#circularCrop").checked
@@ -70,20 +83,9 @@ function updateCanvas() {
 	let backgroundColor = document.querySelector("#backgroundColor").checked ? document.querySelector("#backgroundColorValue").value : null
 	let antiAliasing = document.querySelector("#antiAliasing").checked
 	let zoom = document.querySelector("#zoom").valueAsNumber
-	let rotation = document.querySelector("#rotation").valueAsNumber
+	let rotation = Math.PI / 180 * document.querySelector("#rotation").valueAsNumber
 	let offsetX = document.querySelector("#offsetX").valueAsNumber
 	let offsetY = document.querySelector("#offsetY").valueAsNumber
-
-	// Set to 512 by default in HTML, have to update in the future to adapt to various file size when file picker will be implemented.
-	let canvasWidth = canvas.width //= drawBorder ? border.naturalWidth : avatar.naturalWidth // this second option may generate problems if circularCrop is enabled :/
-	let canvasHeight = canvas.height //= drawBorder ? border.naturalHeight : avatar.naturalHeight
-	let avatarWidth = avatar.naturalWidth
-	let avatarHeight = avatar.naturalHeight
-
-	let x = canvasWidth / 2 - avatarWidth / 2 * zoom
-	let y = canvasHeight / 2 - avatarHeight / 2 * zoom
-
-	let ctx = canvas.getContext("2d")
 
 	ctx.clearRect(0, 0, canvasWidth, canvasHeight)
 
@@ -109,11 +111,19 @@ function updateCanvas() {
 	ctx.save()
 	restoreCount++
 
-	ctx.translate(canvasWidth / 2 + offsetX, canvasHeight / 2 + offsetY)
-	ctx.rotate((Math.PI / 180) * rotation)
-	ctx.translate(-canvasWidth / 2, -canvasHeight / 2)
-
-	ctx.drawImage(avatar, x, y, avatarWidth * zoom, avatarHeight * zoom)
+	// translate to canvas center
+	ctx.translate(canvasWidth / 2, canvasHeight / 2)
+	// scale around canvas center
+	ctx.scale(zoom, zoom)
+	// Offest move
+	ctx.translate(offsetX, offsetY)
+	// Rotate around canvas center
+	// Note: Because we do the translation before the rotation, the rotation will not be done relatively to the center of the canvas.
+	// We could do operation in reverse order, but then the offset move will be done in a rotaded base.
+	// As rotation is juged to be a less common operation, it has been decided to do the translation before the rotation.
+	ctx.rotate(rotation)
+	// Draw image in center
+	ctx.drawImage(avatar, - avatarWidth / 2, - avatarHeight / 2)
 
 	while (restoreCount) {
 		ctx.restore()
