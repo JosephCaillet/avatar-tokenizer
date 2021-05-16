@@ -40,16 +40,17 @@ function main() {
 		if (refreshInProcess) {
 			return
 		}
-		setInputValue("#zoom", document.querySelector("#zoom").valueAsNumber + 0.25 * -1 * Math.sign(e.deltaY))
+		setInputValue("#zoom", document.querySelector("#zoom").valueAsNumber -  (e.ctrlKey ?  0.01 : 0.25) * Math.sign(e.deltaY))
 		updateCanvas()
 		e.preventDefault()
+		e.stopPropagation()
 	})
 
 	// Move avatar image in canvas on mouse drag
 	let canvasDragEnabled, canvasDragX, canvasDragY, startX, startY
 
 	document.querySelector("canvas.main").addEventListener("mousedown", e => {
-		if (refreshInProcess) {
+		if (refreshInProcess || e.button != 0) {
 			return
 		}
 		canvasDragEnabled = true
