@@ -11,8 +11,32 @@ let avatarWidth
 let avatarHeight
 
 function main() {
-	initSettings()
-	updateCanvas()
+	border = document.querySelector("#border")
+	avatar = document.querySelector("#avatar3")
+
+	initImage(avatar)
+	initListeners()
+}
+
+function initListeners() {
+	// Avatar upload
+	document.getElementById("avatarFile").addEventListener("change", e => {
+		if (!e.target.files) {
+			return
+		}
+
+		let file = e.target.files[0];
+
+		let reader = new FileReader()
+		reader.onloadend = e => {
+			let img = new Image()
+			img.onload = e => {
+				initImage(img)
+			}
+			img.src = e.target.result
+		}
+		reader.readAsDataURL(file)
+	})
 
 	// Listen for parameter changes
 	document.querySelectorAll(".params input[type=checkbox]").forEach(i => {
@@ -40,7 +64,7 @@ function main() {
 		if (refreshInProcess) {
 			return
 		}
-		setInputValue("#zoom", document.querySelector("#zoom").valueAsNumber -  (e.ctrlKey ?  0.01 : 0.25) * Math.sign(e.deltaY))
+		setInputValue("#zoom", document.querySelector("#zoom").valueAsNumber - (e.ctrlKey ? 0.01 : 0.25) * Math.sign(e.deltaY))
 		updateCanvas()
 		e.preventDefault()
 		e.stopPropagation()
@@ -86,24 +110,10 @@ function main() {
 	})
 }
 
-function setInputValue(cssSelector, value) {
-	let event = new Event("input")
-	// Refresh labels on offset sliders without refreshing the canvas
-	refreshInProcess = true
-	document.querySelector(cssSelector).value = value
-	document.querySelector(cssSelector).dispatchEvent(event)
-	// dispatch evnet is synchronous, so our lock mechanism works here.
-	refreshInProcess = false
-}
-
-function initSettings() {
+function initImage(avatarImage) {
+	avatar = avatarImage
 	refreshInProcess = true
 
-	border = document.querySelector("#border")
-	// let avatar = document.querySelector("#avatar1")
-	// let avatar = document.querySelector("#avatar2")
-
-	avatar = document.querySelector("#avatar3")
 	let canvas = document.querySelector("canvas.main")
 
 	// Set to 512 by default in HTML, have to update in the future to adapt to various file size when file picker will be implemented.
@@ -134,6 +144,8 @@ function initSettings() {
 	offsetY.min = -avatarHeight + 1
 
 	refreshInProcess = false
+
+	updateCanvas()
 }
 
 function updateCanvas() {
@@ -203,4 +215,14 @@ function updateCanvas() {
 		ctx.clearRect(0, 0, c.width, c.height)
 		ctx.drawImage(canvas, 0, 0, c.width, c.height)
 	})
+}
+
+function setInputValue(cssSelector, value) {
+	let event = new Event("input")
+	// Refresh labels on offset sliders without refreshing the canvas
+	refreshInProcess = true
+	document.querySelector(cssSelector).value = value
+	document.querySelector(cssSelector).dispatchEvent(event)
+	// dispatch evnet is synchronous, so our lock mechanism works here.
+	refreshInProcess = false
 }
