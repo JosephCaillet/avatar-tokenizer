@@ -42,6 +42,7 @@ function main() {
 		}
 		setInputValue("#zoom", document.querySelector("#zoom").valueAsNumber + 0.25 * -1 * Math.sign(e.deltaY))
 		updateCanvas()
+		e.preventDefault()
 	})
 
 	// Move avatar image in canvas on mouse drag
