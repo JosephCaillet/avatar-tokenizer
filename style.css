@@ -15,6 +15,10 @@ canvas.main {
 	cursor: grab;
 }
 
+canvas.main.dragInProgress, body.dragInProgress {
+	cursor: move;
+}
+
 .hidden {
 	display: none;
 }

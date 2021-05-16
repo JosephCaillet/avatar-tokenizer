@@ -53,6 +53,9 @@ function main() {
 			return
 		}
 		canvasDragEnabled = true
+		e.target.classList.add("dragInProgress")
+		document.body.classList.add("dragInProgress")
+
 		canvasDragX = e.screenX
 		canvasDragY = e.screenY
 		startX = document.querySelector("#offsetX").valueAsNumber
@@ -64,6 +67,9 @@ function main() {
 			return
 		}
 		canvasDragEnabled = false
+		e.target.classList.remove("dragInProgress")
+		document.body.classList.remove("dragInProgress")
+
 	})
 
 	document.querySelector("body").addEventListener("mousemove", e => {
