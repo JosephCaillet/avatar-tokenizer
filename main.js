@@ -14,6 +14,7 @@ function main() {
 	initSettings()
 	updateCanvas()
 
+	// Listen for parameter changes
 	document.querySelectorAll(".params input[type=checkbox]").forEach(i => {
 		if (refreshInProcess) {
 			return
@@ -23,15 +24,52 @@ function main() {
 
 	document.querySelectorAll(".params input[type=range], .params input[type=color]").forEach(i => {
 		i.addEventListener("input", e => {
-			if (refreshInProcess) {
-				return
-			}
 			let label = document.querySelector(`label[for="${e.target.id}"] span`)
 			if (label) {
 				label.innerHTML = e.target.value
 			}
+			if (refreshInProcess) {
+				return
+			}
 			updateCanvas()
 		})
+	})
+
+	// Move avatar image in canvas on mouse drag
+	let canvasDragEnabled, canvasDragX, canvasDragY, startX, startY
+
+	document.querySelector("canvas").addEventListener("mousedown", e => {
+		if (refreshInProcess) {
+			return
+		}
+		canvasDragEnabled = true
+		canvasDragX = e.screenX
+		canvasDragY = e.screenY
+		startX = document.querySelector("#offsetX").valueAsNumber
+		startY = document.querySelector("#offsetY").valueAsNumber
+	})
+
+	document.querySelector("body").addEventListener("mouseup", e => {
+		if (refreshInProcess || !canvasDragEnabled) {
+			return
+		}
+		canvasDragEnabled = false
+	})
+
+	document.querySelector("body").addEventListener("mousemove", e => {
+		if (refreshInProcess || !canvasDragEnabled) {
+			return
+		}
+		let zoom = document.querySelector("#zoom").valueAsNumber
+		document.querySelector("#offsetX").value = startX + (e.screenX - canvasDragX)/zoom
+		document.querySelector("#offsetY").value = startY + (e.screenY - canvasDragY)/zoom
+		// Refresh labels on offset sliders without refreshing the canvas
+		refreshInProcess = true
+		let event = new Event("input")
+		document.querySelector("#offsetX").dispatchEvent(event)
+		document.querySelector("#offsetY").dispatchEvent(event)
+		updateCanvas()
+		refreshInProcess = false
 	})
 }
 
