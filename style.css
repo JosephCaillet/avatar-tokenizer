@@ -8,9 +8,24 @@ img {
 
 canvas {
 	border: 1px dashed black;
+	vertical-align: top;
+}
+
+canvas.main {
 	cursor: grab;
 }
 
 .hidden {
 	display: none;
+}
+
+.results div {
+	display: inline-block;
+	vertical-align: top;
+}
+.results div canvas{
+	display: block;
+}
+.results div span{
+	font-size: 0.7em;
 }

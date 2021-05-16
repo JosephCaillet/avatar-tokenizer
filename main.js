@@ -36,7 +36,7 @@ function main() {
 	})
 
 	// Zoom avatar image on moose wheel scroll
-	document.querySelector("canvas").addEventListener("wheel", e => {
+	document.querySelector("canvas.main").addEventListener("wheel", e => {
 		if (refreshInProcess) {
 			return
 		}
@@ -48,7 +48,7 @@ function main() {
 	// Move avatar image in canvas on mouse drag
 	let canvasDragEnabled, canvasDragX, canvasDragY, startX, startY
 
-	document.querySelector("canvas").addEventListener("mousedown", e => {
+	document.querySelector("canvas.main").addEventListener("mousedown", e => {
 		if (refreshInProcess) {
 			return
 		}
@@ -97,7 +97,7 @@ function initSettings() {
 	// let avatar = document.querySelector("#avatar2")
 
 	avatar = document.querySelector("#avatar3")
-	let canvas = document.querySelector("canvas")
+	let canvas = document.querySelector("canvas.main")
 
 	// Set to 512 by default in HTML, have to update in the future to adapt to various file size when file picker will be implemented.
 	canvasWidth = canvas.width //= drawBorder ? border.naturalWidth : avatar.naturalWidth // this second option may generate problems if circularCrop is enabled :/
@@ -130,7 +130,7 @@ function initSettings() {
 }
 
 function updateCanvas() {
-	let canvas = document.querySelector("canvas")
+	let canvas = document.querySelector("canvas.main")
 	let ctx = canvas.getContext("2d")
 
 	let drawBorder = document.querySelector("#drawBorder").checked
@@ -189,4 +189,11 @@ function updateCanvas() {
 	if (drawBorder) {
 		ctx.drawImage(border, 0, 0)
 	}
+
+	// Draw lower size preview
+	document.querySelectorAll("canvas.secondary").forEach(c => {
+		let ctx = c.getContext("2d")
+		ctx.clearRect(0, 0, c.width, c.height)
+		ctx.drawImage(canvas, 0, 0, c.width, c.height)
+	})
 }
