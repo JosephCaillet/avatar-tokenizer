@@ -35,6 +35,15 @@ function main() {
 		})
 	})
 
+	// Zoom avatar image on moose wheel scroll
+	document.querySelector("canvas").addEventListener("wheel", e => {
+		if (refreshInProcess) {
+			return
+		}
+		setInputValue("#zoom", document.querySelector("#zoom").valueAsNumber + 0.25 * -1 * Math.sign(e.deltaY))
+		updateCanvas()
+	})
+
 	// Move avatar image in canvas on mouse drag
 	let canvasDragEnabled, canvasDragX, canvasDragY, startX, startY
 
@@ -60,19 +69,24 @@ function main() {
 		if (refreshInProcess || !canvasDragEnabled) {
 			return
 		}
+
 		let zoom = document.querySelector("#zoom").valueAsNumber
-		document.querySelector("#offsetX").value = startX + (e.screenX - canvasDragX)/zoom
-		document.querySelector("#offsetY").value = startY + (e.screenY - canvasDragY)/zoom
-		// Refresh labels on offset sliders without refreshing the canvas
-		refreshInProcess = true
-		let event = new Event("input")
-		document.querySelector("#offsetX").dispatchEvent(event)
-		document.querySelector("#offsetY").dispatchEvent(event)
+		setInputValue("#offsetX", startX + (e.screenX - canvasDragX) / zoom)
+		setInputValue("#offsetY", startY + (e.screenY - canvasDragY) / zoom)
+
 		updateCanvas()
-		refreshInProcess = false
 	})
 }
 
+function setInputValue(cssSelector, value) {
+	let event = new Event("input")
+	// Refresh labels on offset sliders without refreshing the canvas
+	refreshInProcess = true
+	document.querySelector(cssSelector).value = value
+	document.querySelector(cssSelector).dispatchEvent(event)
+	// dispatch evnet is synchronous, so our lock mechanism works here.
+	refreshInProcess = false
+}
 
 function initSettings() {
 	refreshInProcess = true
@@ -94,7 +108,10 @@ function initSettings() {
 	let cropRadius = document.querySelector("#circularCropRadius")
 	cropRadius.value = cropRadius.max = canvas.width / 2
 
-	document.querySelector("#zoom").value = Math.min(canvasHeight / avatarHeight, canvasWidth / avatarWidth)
+	let defaultZoom = Math.min(canvasHeight / avatarHeight, canvasWidth / avatarWidth)
+	document.querySelector("#zoom").value = defaultZoom
+	document.querySelector("#zoom + label > span").innerHTML = defaultZoom.toPrecision(3)
+
 	document.querySelector("#rotation").value = 0
 
 	// Will only work if zoom value set to 1, have to be fixed later :/
