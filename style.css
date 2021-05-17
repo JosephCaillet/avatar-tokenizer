@@ -11,7 +11,8 @@ canvas {
 }
 
 canvas.main {
-	border: 1px dashed black;
+	/* border: 1px dashed black; */
+	background: url('./chessboard.png');
 	cursor: grab;
 }
 
@@ -46,9 +47,21 @@ canvas.main.dragInProgress, body.dragInProgress {
 }
 
 .results div span{
-	font-size: 0.7em;
+	font-size: 0.8em;
 	display: block;
 	margin: auto;
 	width: 100%;
 	text-align: center;
+}
+
+/* Dark theme */
+body {
+	transition: background 1s, color 1s;
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background-color: #1c1c1e ;
+		color: #fafafa ;
+		}
 }
