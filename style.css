@@ -7,11 +7,11 @@ img {
 }
 
 canvas {
-	border: 1px dashed black;
 	vertical-align: top;
 }
 
 canvas.main {
+	border: 1px dashed black;
 	cursor: grab;
 }
 
@@ -23,13 +23,32 @@ canvas.main.dragInProgress, body.dragInProgress {
 	display: none;
 }
 
-.results div {
-	display: inline-block;
-	vertical-align: top;
+.results {
+	display: grid;
+	grid-template-columns: 512px 1fr;
+	column-gap: 1em;
 }
+
+.preview {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	height: min-content;
+	margin-left: 0.4em;
+}
+
+.preview div {
+	margin-right: 0.4em;
+}
+
 .results div canvas{
 	display: block;
 }
+
 .results div span{
 	font-size: 0.7em;
+	display: block;
+	margin: auto;
+	width: 100%;
+	text-align: center;
 }

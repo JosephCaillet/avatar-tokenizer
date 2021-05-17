@@ -38,6 +38,27 @@ function initListeners() {
 		reader.readAsDataURL(file)
 	})
 
+	// Border upload
+	document.getElementById("borderFile").addEventListener("change", e => {
+		if (!e.target.files) {
+			return
+		}
+
+		let file = e.target.files[0];
+
+		let reader = new FileReader()
+		reader.onloadend = e => {
+			let img = new Image()
+			img.onload = e => {
+				border = img
+				document.querySelector("#drawBorder").checked = true
+				updateCanvas()
+			}
+			img.src = e.target.result
+		}
+		reader.readAsDataURL(file)
+	})
+
 	// Listen for parameter changes
 	document.querySelectorAll(".params input[type=checkbox]").forEach(i => {
 		if (refreshInProcess) {

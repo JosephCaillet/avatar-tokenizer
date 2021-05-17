@@ -12,8 +12,13 @@
 	<h1>Avatar tokenizer</h1>
 	<div class="params">
 		<div>
-			<label for="avatar">Choose an avatar:</label>
+			<label for="avatar">Import avatar:</label>
 			<input type="file" id="avatarFile" name="avatar" accept="image/*">
+		</div>
+
+		<div>
+			<label for="border">Import border:</label>
+			<input type="file" id="borderFile" name="border" accept="image/*">
 		</div>
 
 		<hr>
@@ -69,21 +74,55 @@
 			<canvas class="main" width="512" height="512"></canvas>
 			<span>512x512</span>
 		</div>
-		<div>
-			<canvas class="secondary" width="256" height="256"></canvas>
-			<span>256x256</span>
-		</div>
-		<div>
-			<canvas class="secondary" width="128" height="128"></canvas>
-			<span>128x128</span>
-		</div>
-		<div>
-			<canvas class="secondary" width="64" height="64"></canvas>
-			<span>64x64</span>
-		</div>
-		<div>
-			<canvas class="secondary" width="32" height="32"></canvas>
-			<span>32x32</span>
+		<div class="preview">
+			<div>
+				<canvas class="secondary" width="300" height="300"></canvas>
+				<span>300x300</span>
+			</div>
+			<div>
+				<canvas class="secondary" width="256" height="256"></canvas>
+				<span>256x256</span>
+			</div>
+			<div>
+				<canvas class="secondary" width="200" height="200"></canvas>
+				<span>200x200</span>
+			</div>
+			<div>
+				<canvas class="secondary" width="128" height="128"></canvas>
+				<span>128x128</span>
+			</div>
+			<div>
+				<canvas class="secondary" width="100" height="100"></canvas>
+				<span>100x100</span>
+			</div>
+			<div>
+				<canvas class="secondary" width="64" height="64"></canvas>
+				<span>64x64</span>
+			</div>
+			<div>
+				<canvas class="secondary" width="50" height="50"></canvas>
+				<span>50x50</span>
+			</div>
+			<div>
+				<canvas class="secondary" width="40" height="40"></canvas>
+				<span>40x40</span>
+			</div>
+			<div>
+				<canvas class="secondary" width="32" height="32"></canvas>
+				<span>32x32</span>
+			</div>
+			<div>
+				<canvas class="secondary" width="25" height="25"></canvas>
+				<span>25x25</span>
+			</div>
+			<div>
+				<canvas class="secondary" width="20" height="20"></canvas>
+				<span>20x20</span>
+			</div>
+			<div>
+				<canvas class="secondary" width="16" height="16"></canvas>
+				<span>16x16</span>
+			</div>
 		</div>
 	</div>
 
@@ -91,6 +130,7 @@
 		<h2>Example images</h2>
 		<div>
 			<img src="./border.png" alt="border" id="border">
+			<img src="./border2.png">
 			<img src="./avatar.png" id="avatar1">
 			<img src="./avatar2.png" id="avatar2">
 			<img src="./avatar3.png" id="avatar3">
